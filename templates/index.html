@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hashtag generator</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.8.1/lottie.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/static/accordion.js"></script>
+    <script>
+        function processTags() {
+            let text = $('#text').val();
+            let fd = new FormData();
+            fd.append("text", text);
+            $(".loader_dots").show();
+            $.ajax({
+                type: "POST",
+                url: "/get-tags",
+                data: fd,
+                processData: false,
+                contentType: false,
+                success: (data) => {
+                    console.log(data);
+                    $('#tags').html("");
+                    $('#first_card').html("");
+                    $('#second_card').html("");
+                    $('#third_card').html("");
+                    $('#fourth_card').html("");
+                    $('#fifth_card').html("");
+                    $('#sixth_card').html("");
+                    $('#seventh_card').html("");
+                    $('#eight_card').html("");
+                    $('.title').css("display", "flex");
+                    for(let tag in data.tags){
+                        $('#tags').append(`<div class="tag">#${tag}</div>`);
+                    }
+                    for(let tag in data.spacy_hotwords){
+                        $('#first_card').append(`<div class="tag">#${tag}</div>`);
+                    }
+                    for(let tag in data.rake_spacy_tags){
+                        $('#second_card').append(`<div class="tag">#${tag}</div>`);
+                    }
+                    for(let tag in data.rake_nltk_tags){
+                        $('#third_card').append(`<div class="tag">#${tag}</div>`);
+                    }
+                    for(let tag in data.glove){
+                        $('#fourth_card').append(`<div class="tag">#${tag}</div>`);
+                    }
+                    for(let tag in data.word2vec){
+                        $('#fifth_card').append(`<div class="tag">#${tag}</div>`);
+                    }
+                    for(let tag in data.fasttext){
+                        $('#sixth_card').append(`<div class="tag">#${tag}</div>`);
+                    }
+                    for(let tag in data.keybert_tags){
+                        $('#seventh_card').append(`<div class="tag">#${tag}</div>`);
+                    }
+                    for(let tag in data.yake_tags){
+                        $('#eight_card').append(`<div class="tag">#${tag}</div>`);
+                    }
+                },
+            }).always(() => {
+                $(".loader_dots").hide();
+            });
+        }
+        $(()=>{
+            bodymovin.loadAnimation({
+                container: document.getElementsByClassName("loader_dots")[0],
+                renderer: 'svg',
+                path: "/static/loader.json",
+                rendererSettings: {
+                    viewBoxOnly: true,
+                    className: "loader_dots",
+                    preserveAspectRatio: 'xMidYMid meet'
+                },
+            })
+        })
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300&display=swap');
+        body{
+            font-family: 'Roboto Mono', sans-serif;
+        }
+        h1{
+            font-size: 32px;
+        }
+        .container{
+            display: flex;
+            flex:1;
+            margin: 50px auto;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-width: 500px;
+        }
+        textarea{
+            width: 100%;
+            height: 200px;
+            margin: 40px 0 30px 0;
+            border-radius: 10px;
+            padding: 30px;
+            font-size: 20px;
+            box-shadow: 1px 0 6px #888888;
+            border: none;
+        }
+        button{
+            background-color: transparent;
+            box-shadow: 1px 0 6px #888888;
+            border: none;
+            border-radius: 15px;
+            color: #3B3B3B;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px 24px;
+            transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+            width: 120px;
+        }
+        button:hover {
+            color: #fff;
+            background-color: #1A1A1A;
+            box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+            transform: translateY(-2px);
+        }
+        .tag{
+            background-color: darkorange;
+            border-radius: 10px;
+            font-size: 16px;
+            color: aliceblue;
+            padding: 6px 14px;
+            margin: 0 10px 10px 0;
+        }
+        #tags{
+            margin-top: 50px;
+            display: flex;
+            flex-direction: row;
+            max-width: 560px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: left;
+        }
+        .loader_dots{
+            display:none;
+            width:200px;
+            height: 100px;
+            align-items: center;
+            justify-content: center;
+        }
+        .title{
+            display: none;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .title:hover{
+            cursor: pointer ;
+        }
+        .title p{
+            margin-right: 7px;
+        }
+        .wrapper{
+            display: flex;
+            max-width: 560px;
+            flex-wrap: wrap;
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .openable{
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: left;
+            margin-top: 20px;
+        }
+        .card{
+            display: flex;
+            max-width: 560px;
+            align-items: flex-start;
+            flex-direction: column;
+            justify-content: left;
+            width: 100%;
+            padding: 0 30px;
+            border-radius: 15px;
+            box-shadow: 1px 0 6px #888888;
+            box-sizing: border-box;
+        }
+        .card h3{
+            font-size: 24px;
+            margin-bottom: 0;
+        }
+        #first_card, #second_card, #third_card, #fourth_card, #fifth_card, #sixth_card, #seventh_card, #eight_card{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        .accordion_body{
+            overflow:hidden;
+            transition:height 0.3s ease-out;
+            height:0;
+        }
+        .accordion_card svg {
+            transform-origin: center;
+            transition: transform 0.5s;
+        }
+        .accordion_card.open svg{
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Hashtag generator</h1>
+    <p>The main goal of this project is to process a piece of text and determine its keywords and keyphrases as hashtags. For keyword and keypharse extraction combinations of NLTK, spaCy, RAKE, KeyBERT and YAKE are used.</p>
+       <p> Then from the keywords found we can determine similar words and words that are related to the content. For this GloVe, Word2Vec and FastText are used.</p>
+    <textarea id="text">Natural language processing (NLP) is a subfield of linguistics, computer science, and artificial intelligence concerned with the interactions between computers and human language, in particular how to program computers to process and analyze large amounts of natural language data. The goal is a computer capable of "understanding" the contents of documents, including the contextual nuances of the language within them. The technology can then accurately extract information and insights contained in the documents as well as categorize and organize the documents themselves. Challenges in natural language processing frequently involve speech recognition, natural-language understanding, and natural-language generation.</textarea>
+    <button onclick="processTags()">Generate</button>
+    <div class="loader_dots"></div>
+    <div id="tags"></div>
+    <div class="wrapper accordion_card">
+        <div class="title accordion_head">
+            <p>Show information about methods</p>
+            <svg width="10" height="10" stroke="black" stroke-width="1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M23.245 4l-11.245 14.374-11.219-14.374-.781.619 12 15.381 12-15.391-.755-.609z"/></svg>
+        </div>
+        <div class="accordion_body" style="padding: 4px;">
+            <div class="openable card">
+                <a href="https://spacy.io/" target="_blank"><h3>spaCy part-of-speech tagging</h3></a>
+                <p>SpaCy takes the text and using an object-oriented approach tags words and allows noun extraction</p>
+                <div id="first_card"></div>
+                <br>
+            </div>
+            <div class="openable card">
+                <a href="https://pypi.org/project/rake-spacy/" target="_blank"><h3>RAKE based on SpaCy</h3></a>
+                <p>Using RAKE's recognition os keyphrases and the relationships between words, this method extracts verbs and decides best ones for keyword extraction.</p>
+                <div id="second_card"></div>
+                <br>
+            </div>
+            <div class="openable card">
+                <a href="https://pypi.org/project/rake-nltk/" target="_blank"><h3>RAKE based on NLTK</h3></a>
+                <p>Method combines RAKE's keyword and keyphrase recognition and NLTK's string processing capabilities to bring suitable keywords from any text.</p>
+                <div id="third_card"></div>
+                <br>
+            </div>
+            <div class="openable card">
+                <a href="https://github.com/LIAAD/yake" target="_blank"><h3>YAKE</h3></a>
+                <p>A light-weight unsupervised automatic keyword extraction method which rests on text statistical features extracted from single documents to select the most important keywords of a text.</p>
+                <div id="eight_card"></div>
+                <br>
+            </div>
+            <div class="openable card">
+                <a href="https://nlp.stanford.edu/projects/glove/" target="_blank"><h3>GloVe</h3></a>
+                <p>Uses keywords made by previous methods and makes new ones using word vectors and their relationships. Not a keyword extractor, but this augments output of previous ones with similar words</p>
+                <div id="fourth_card"></div>
+                <br>
+            </div>
+            <div class="openable card">
+                <a href="https://en.wikipedia.org/wiki/Word2vec" target="_blank"><h3>Word2Vec</h3></a>
+                <p>Another way to get word embeddings. Takes the cosine similarity between two words vectors to determine their relationship</p>
+                <div id="fifth_card"></div>
+                <br>
+            </div>
+            <div class="openable card">
+                <a href="https://arxiv.org/abs/1607.04606 " target="_blank"><h3>FastText</h3></a>
+                <p>Method to learn word representation that relies on Skip-Gram model of Word2Vec but with improved performance. Uses all word n-grams for training and achieves similar performance to Word2Vec on smaller datasets.</p>
+                <div id="sixth_card"></div>
+                <br>
+            </div>
+            <div class="openable card">
+                <a href="https://maartengr.github.io/KeyBERT/" target="_blank"><h3>KeyBERT</h3></a>
+                <p>A minimal and easy-to-use keyword extraction technique. It uses BERT-embeddings and simple cosine similarity to find the sub-phrases in a document that are the most similar to the document itself.</p>
+                <div id="seventh_card"></div>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+<p style="display: none">This is a beautiful test text created for testing this tool. It has to be a little longer for the test to be somewhat successful.</p>
